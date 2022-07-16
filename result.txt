@@ -1,0 +1,6 @@
+~/TriggEye/OpenFace_2.2.0_win_x64 ~/TriggEye
+~/TriggEye
+Reading the landmark detector/tracker from: model/main_ceclm_general.txt
+Reading the landmark detector module from: model\cen_general.txt
+Reading the PDM module from: model\pdms/In-the-wild_aligned_PDM_68.txt....Done
+Reading the Triangulations module from: model\tris_68.txt....Done

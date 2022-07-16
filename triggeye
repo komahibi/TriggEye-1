@@ -5,9 +5,9 @@
 # https://github.com/takjg/TriggEye/blob/master/LICENSE
 
 device=0     # -d <id> ........... camera ID
-width=1920   # -w <pixels> ....... camera width
-height=1080  # -h <pixels> ....... camera height
-interval=1.0 # -i <seconds> ...... minimum trigger interval
+width=1000   # -w <pixels> ....... camera width
+height=500  # -h <pixels> ....... camera height
+interval=10.0 # -i <seconds> ...... minimum trigger interval
 margin=150   # -m <millimeters> .. margin for error
 
 while getopts i:m:d:w:h: OPT; do
