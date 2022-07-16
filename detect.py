@@ -2,9 +2,14 @@
 # Released under the Apache License, Version 2.0
 # https://github.com/takjg/TriggEye/blob/master/LICENSE
 
+from this import d
+import time
+
 from math import sqrt
 from sys  import argv, stdin
 from time import perf_counter
+import ikoma
+
 
 def getArgs():
     interval = float(argv[1]) # minimum trigger interval (seconds)
@@ -34,20 +39,50 @@ last = 0
 def detect(idx, row, interval, margin):
     d0 = diff(idx, row, 0)
     d1 = diff(idx, row, 1)
-    if d0 < margin or d1 < margin:
-        global last
-        now = perf_counter()
-        if now - last > interval:
-            frame = get(idx, row, 'frame')
-            print('{} {} {}'.format(frame, d0, d1), flush=True)
+    dd = average(d0, d1)
+    
+    
+    #if d0 < margin or d1 < margin:
+    global last
+    now = perf_counter()
+    if now - last > interval:
+        #frame = get(idx, row, 'frame')
+        #print('{} {} {}'.format(frame, d0, d1), flush=True)
         last = now
+        #print(d0)      
+
+        print(dd, flush=True)
+        (x ,y ,z) = dd
+        rotation = ikoma.main(x, y, z)
+        '''
+        num = -180
+        print("start")
+        while (num <= 180):
+            print(num)
+            ikoma.test(num)
+            time.sleep(3)
+            num += 10
+        print("testfinish")
+        '''
+        time.sleep(int(interval/2))
+        ikoma.finish(rotation)
+
+ 
 
 def diff(idx, row, lr):
     g = gaze(idx, row, lr)
     e =  eye(idx, row, lr)
-    d = distance(e)
+    #d = distance(e)
+    #d = 660
+    distan = 1500
+    if(distance(g)==0):
+        d = 0
+    else:
+        d = distan/distance(g)
     a = add(e, mul(g, d))
-    return int(distance(a))
+    a = ycheck(a,g,e)
+    return a
+    #return int(distance(a))
 
 # cf. https://github.com/TadasBaltrusaitis/OpenFace/wiki/Output-Format
 def gaze(idx, row, lr):
@@ -76,6 +111,27 @@ def add(v, u):
     (x0, y0, z0) = v
     (x1, y1, z1) = u
     return (x0 + x1, y0 + y1, z0 + z1)
+
+def average(v, n):
+    (x0, y0, z0) = v
+    (x1, y1, z1) = n
+    if(y0 + y1 == 0):
+        return ((x0 + x1)/2, 0, (z0 + z1)/2)
+    return ((x0 + x1)/2, (y0 + y1)/2, (z0 + z1)/2)
+
+def ycheck(a,g,e):
+    (x0, y0, z0) = a
+    (x1, y1, z1) = g
+    (x2, y2, z2) = e
+    underground = 300
+    if(y0 > underground):
+        if(y1 == 0):
+            under = 0
+        else:
+            under = (-y2 + underground)/y1
+        return add(e, mul(g, under))
+    return a
+
 
 if __name__ == '__main__':
     main(*getArgs())
